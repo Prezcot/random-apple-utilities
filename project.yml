@@ -1,0 +1,35 @@
+# XcodeGen spec. Run `make project` to turn this into Toolbelt.xcodeproj (which is gitignored).
+name: Toolbelt
+options:
+  bundleIdPrefix: com.prezcot
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Toolbelt:
+    type: application
+    platform: macOS
+    sources:
+      - path: Toolbelt
+    info:
+      path: Toolbelt/Info.plist
+      properties:
+        CFBundleDisplayName: Toolbelt
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        # Menu-bar only: no Dock icon, not in the ⌘-Tab switcher.
+        LSUIElement: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.prezcot.toolbelt
+        # Ad-hoc signing for local use. Swap in a Developer ID identity to distribute.
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_HARDENED_RUNTIME: NO
+    scheme: {}
