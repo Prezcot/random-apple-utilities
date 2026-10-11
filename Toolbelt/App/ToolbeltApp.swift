@@ -9,20 +9,11 @@ struct ToolbeltApp: App {
             PanelView()
                 .environment(appDelegate.appState)
         } label: {
-            MenuBarIcon()
-                .environment(appDelegate.appState)
+            Image("MenuBarIcon")
+                .renderingMode(.template)
+                .accessibilityLabel("Toolbelt")
         }
         .menuBarExtraStyle(.window)
-    }
-}
-
-/// The icon in the menu bar. Reads state in a view so it updates when a module changes.
-private struct MenuBarIcon: View {
-    @Environment(AppState.self) private var appState
-
-    var body: some View {
-        Image(systemName: appState.menuBarSymbol)
-            .accessibilityLabel("Toolbelt")
     }
 }
 

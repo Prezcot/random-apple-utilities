@@ -11,8 +11,6 @@ protocol ToolbeltModule: AnyObject {
     var summary: String { get }
     /// SF Symbol for the module's tab and Settings card.
     var symbolName: String { get }
-    /// SF Symbol for the menu bar when this module is the first one turned on.
-    var menuBarSymbol: String { get }
     /// Permissions Toolbelt asks for when the module is turned on.
     var permissions: [ModulePermission] { get }
 
@@ -25,7 +23,6 @@ protocol ToolbeltModule: AnyObject {
 }
 
 extension ToolbeltModule {
-    var menuBarSymbol: String { symbolName }
     var permissions: [ModulePermission] { [] }
 }
 

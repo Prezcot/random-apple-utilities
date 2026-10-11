@@ -4,3 +4,4 @@ DerivedData/
 *.xcodeproj
 Toolbelt/Info.plist
 xcuserdata/
+.playwright-mcp/

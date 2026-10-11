@@ -35,10 +35,6 @@ final class AppState {
         enabledModules.first { $0.id == selectedModuleID } ?? enabledModules.first
     }
 
-    var menuBarSymbol: String {
-        enabledModules.first?.menuBarSymbol ?? "wrench.and.screwdriver"
-    }
-
     func start() {
         if showsWelcome {
             defaults.set(true, forKey: Keys.hasLaunched)

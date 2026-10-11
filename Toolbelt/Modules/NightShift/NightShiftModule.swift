@@ -14,7 +14,6 @@ final class NightShiftModule: ToolbeltModule {
     let name = "Night Shift Forever"
     let summary = "Keeps Night Shift on until you turn it off. No permissions needed."
     let symbolName = "moon.fill"
-    var menuBarSymbol: String { isOn ? "moon.fill" : "moon" }
 
     let isSupported: Bool
     private(set) var isOn: Bool

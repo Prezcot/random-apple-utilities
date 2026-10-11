@@ -4,12 +4,15 @@ export DEVELOPER_DIR
 
 APP := build/Build/Products/Release/Toolbelt.app
 
-.PHONY: project build install run clean
+.PHONY: icons project build install run clean
+
+icons:
+	swift scripts/make-icons.swift
 
 project:
 	xcodegen generate
 
-build: project
+build: icons project
 	xcodebuild -project Toolbelt.xcodeproj -scheme Toolbelt -configuration Release \
 		-derivedDataPath build -quiet build
 
