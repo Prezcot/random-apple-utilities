@@ -3,8 +3,9 @@ import SwiftUI
 
 /// Keeps Night Shift on until you turn it off.
 ///
-/// On: Apple's schedule is set to cover the whole day (so Night Shift survives Toolbelt quitting),
-/// and a watcher turns it straight back on whenever macOS switches it off.
+/// On: Apple's schedule is set to end 11 to 12 hours from now and moved on every hour, so its end
+/// never comes while Toolbelt runs. A watcher turns Night Shift straight back on whenever macOS
+/// switches it off. After Toolbelt quits, Night Shift stays on until the schedule ends.
 /// Off: Night Shift is turned off and Apple's schedule set to Off, so macOS can't turn it back on.
 /// Turning the module off in Settings restores the Night Shift setup you had before.
 @MainActor
@@ -31,8 +32,13 @@ final class NightShiftModule: ToolbeltModule {
     @ObservationIgnored private var heartbeat: Timer?
     @ObservationIgnored private var wakeObserver: NSObjectProtocol?
 
-    /// Apple's schedule can't span a full 24 hours; the watcher covers the missing minute.
-    private static let allDay = BlueLightClient.Schedule(fromHour: 0, fromMinute: 0, toHour: 23, toMinute: 59)
+    /// Apple's schedule can't span a full 24 hours, and Night Shift fades out over the 2 minutes
+    /// before it ends while still reporting itself on, so the watcher can't catch it. Instead the
+    /// schedule's end is kept 11 to 12 hours away: it runs from 1 minute past an hour to that hour.
+    private static func rollingSchedule(at date: Date) -> BlueLightClient.Schedule {
+        let endHour = Int32((Calendar.current.component(.hour, from: date) + 12) % 24)
+        return BlueLightClient.Schedule(fromHour: endHour, fromMinute: 1, toHour: endHour, toMinute: 0)
+    }
 
     private enum Keys {
         static let isOn = "nightShift.isOn"
@@ -139,7 +145,7 @@ final class NightShiftModule: ToolbeltModule {
         guard let client, isActive, !isPreviewing else { return }
         lastApplied = .now
         if isOn {
-            client.setSchedule(Self.allDay)
+            client.setSchedule(Self.rollingSchedule(at: .now))
             client.setMode(.custom)
             client.setEnabled(true)
         } else {
@@ -149,13 +155,15 @@ final class NightShiftModule: ToolbeltModule {
     }
 
     /// Runs whenever Night Shift changes, on wake, and every 30 seconds.
-    /// Toolbelt wins on on/off; a warmth change made elsewhere is adopted by the slider.
+    /// Toolbelt wins on on/off and the schedule; a warmth change made elsewhere is adopted by the slider.
     private func reconcile() {
         guard let client, isActive, !isPreviewing, let status = client.status() else { return }
 
         let wantedMode: BlueLightClient.Mode = isOn ? .custom : .off
+        let isAsWanted = status.isEnabled == isOn && status.mode == wantedMode
+            && (!isOn || status.schedule == Self.rollingSchedule(at: .now))
         // The rate limit stops Toolbelt fighting macOS in a tight loop if a change doesn't stick.
-        if (status.isEnabled != isOn || status.mode != wantedMode), Date.now.timeIntervalSince(lastApplied) > 2 {
+        if !isAsWanted, Date.now.timeIntervalSince(lastApplied) > 2 {
             apply()
         }
 

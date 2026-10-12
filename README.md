@@ -11,7 +11,7 @@ A menu-bar app for macOS 14+ that holds small utilities ("modules"). Turn module
 ## Modules
 
 - **Night Shift Forever**: keeps Night Shift on until you turn it off, with a warmth slider. It needs no permissions.
-  - **On**: sets Apple's Night Shift schedule to cover the whole day and turns Night Shift back on whenever macOS switches it off.
+  - **On**: sets Apple's Night Shift schedule so it always ends 11 to 12 hours from now, moves it on every hour, and turns Night Shift back on whenever macOS switches it off. After you quit Toolbelt, Night Shift stays on until that schedule ends.
   - **Off**: turns Night Shift off and sets the schedule to Off, so macOS doesn't turn it back on.
   - **Warmth**: drag the slider to preview the warmth, even while Night Shift is off. A warmth change made in System Settings shows up in the slider.
   - **Turning the module off** in Settings puts back the Night Shift setup you had before. Quitting Toolbelt leaves Night Shift as it is.
